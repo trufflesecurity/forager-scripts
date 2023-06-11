@@ -27,7 +27,7 @@ conn.commit()
 def monitor_github():
     headers = {
         'Accept': 'application/vnd.github+json',
-        'Authorization': f'token {API_KEY}'
+        #'Authorization': f'token {API_KEY}'
     }
     for org in ORGANIZATIONS:
         url = f'https://api.github.com/orgs/{org}/events'
@@ -61,15 +61,19 @@ def monitor_user_commits(username, headers):
         for event in events:
             if event['type'] == 'PushEvent':
                 for commit in event['payload']['commits']:
-                    commit_url = commit['url']
+                    repo_name = event['repo']['name']
+                    sha = commit['sha']
+                    commit_url = f'https://api.github.com/repos/{repo_name}/commits/{sha}'
                     commit_response = requests.get(commit_url, headers=headers)
                     if commit_response.status_code == 200:
                         commit_content = commit_response.json()
-                        print(f'Commit by {username}: {commit_content["commit"]["message"]}')
+                        print(f'Commit by {username}: {commit_content}')  # print the entire commit content
                     else:
-                        print(f'Failed to retrieve commit message for {username}. Status code: {commit_response.status_code}')
+                        print(f'Failed to retrieve commit content for {username}. Status code: {commit_response.status_code}')
     else:
         print(f'Failed to retrieve events for {username}. Status code: {response.status_code}')
+
+
 
 if __name__ == "__main__":
     while True:
