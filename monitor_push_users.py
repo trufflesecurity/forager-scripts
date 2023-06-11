@@ -27,7 +27,7 @@ conn.commit()
 def monitor_github():
     headers = {
         'Accept': 'application/vnd.github+json',
-        #'Authorization': f'token {API_KEY}'
+        'Authorization': f'token {API_KEY}'
     }
     for org in ORGANIZATIONS:
         url = f'https://api.github.com/orgs/{org}/events'
